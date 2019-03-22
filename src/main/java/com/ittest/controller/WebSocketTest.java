@@ -51,7 +51,8 @@ public class WebSocketTest {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("来自客户端的消息:" + message);
+        System.out.println("来自小程序用户【张三】的指令:" + message);
+        System.out.println("转发指令：指令【T-30】转发至设备号【1-101-A】");
         byte[] bytes=null;
         try {
              bytes=(message+"\r\n").getBytes("utf-8");

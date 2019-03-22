@@ -2,8 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ittest.dao.IUserDao">
-    <select id="findAll" resultType="com.ittest.entiry.User">
-        SELECT * from user
+<mapper namespace="com.ittest.dao.DeviceDao">
+
+
+    <select id="findByDeviceName" resultType="com.ittest.entiry.Device">
+        SELECT * FROM device where device_name=#{deviceName}
     </select>
 </mapper>
