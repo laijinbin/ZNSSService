@@ -97,4 +97,14 @@ public class MiniprogramService {
             return WebUtil.generateFailModelMap("服务器忙，等下再试好不好");
         }
     }
+
+    public Map<String, Object> cancalBind(String openId) {
+        try {
+            sysUserDao.deleteUser(openId);
+            return WebUtil.generateModelMap("0","解绑成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return WebUtil.generateFailModelMap("服务器忙，等下再试好不好");
+        }
+    }
 }

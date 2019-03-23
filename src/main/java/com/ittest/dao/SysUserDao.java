@@ -6,4 +6,6 @@ public interface SysUserDao {
     SysUser findUserByOpenId(String openId);
 
     int saveUser(SysUser sysUser);
+
+    void deleteUser(String openId);
 }

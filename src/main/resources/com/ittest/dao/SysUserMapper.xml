@@ -7,6 +7,9 @@
         INSERT INTO sys_user(user_name,password,open_id,device_id,phone,is_bind,real_name)
          VALUES(#{userName},#{password},#{openId},#{deviceId},#{phone},#{isBind},#{realName})
     </insert>
+    <delete id="deleteUser">
+        DELETE FROM sys_user where open_id=#{openId}
+    </delete>
 
     <select id="findUserByOpenId" resultType="com.ittest.entiry.SysUser">
         SELECT * from sys_user where open_id=#{openId}

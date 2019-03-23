@@ -49,4 +49,17 @@ public class MiniprogramController {
         }
         return resultMap;
     }
+
+    @RequestMapping("/cancalBind")
+    @ResponseBody
+    public Map<String, Object> cancalBind(String openId){
+        Map<String,Object> resultMap= null;
+        try {
+            resultMap = miniprogramService.cancalBind(openId);
+        } catch (Exception e) {
+            resultMap=WebUtil.generateFailModelMap("服务器忙，等一下再来好不好");
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
 }
