@@ -9,9 +9,12 @@ import com.ittest.utils.HttpClientUtils;
 import com.ittest.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +34,9 @@ public class MiniprogramService {
     private SysUserDao sysUserDao;
     @Autowired
     private DeviceDao deviceDao;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Value("${openId}")
     private String openId;
@@ -84,7 +90,7 @@ public class MiniprogramService {
             sysUser.setOpenId(openId);
             sysUser.setDeviceId(device.getDeviceId());
             sysUser.setIsBind("1");
-            sysUser.setPassword(password);
+            sysUser.setPassword(bCryptPasswordEncoder.encode(password));
             sysUser.setUserName(username);
             sysUser.setRealName(realName);
             sysUser.setPhone(phone);
@@ -102,6 +108,45 @@ public class MiniprogramService {
         try {
             sysUserDao.deleteUser(openId);
             return WebUtil.generateModelMap("0","解绑成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return WebUtil.generateFailModelMap("服务器忙，等下再试好不好");
+        }
+    }
+
+    public Map<String,Object> demo(String username){
+        SysUser sysUser=sysUserDao.findUserByUserName(username);
+        System.out.println(sysUser);
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",sysUser);
+        return map;
+    }
+
+    public Map<String,Object> changPassword(String oldPassword, String newPassword, String userName) {
+        SysUser sysUser=sysUserDao.findUserByUserName(userName);
+        if (!bCryptPasswordEncoder.matches(oldPassword,sysUser.getPassword())){
+            return WebUtil.generateModelMap("1","原密码错误，请重新输入");
+        }
+        try {
+            sysUser.setPassword(bCryptPasswordEncoder.encode(newPassword));
+            sysUserDao.modifyPassword(sysUser);
+            return WebUtil.generateModelMap("0","修改密码成功，请重新登录");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return WebUtil.generateModelMap("1","服务器忙，等下再试行不行");
+        }
+
+    }
+
+    public Map<String, Object> updateUser(String userName,String phone,String realName,int userId) {
+        SysUser sysUser=new SysUser();
+        sysUser.setRealName(realName);
+        sysUser.setUserName(userName);
+        sysUser.setUserId(userId);
+        sysUser.setPhone(phone);
+        try {
+            sysUserDao.updateUser(sysUser);
+            return WebUtil.generateModelMap("0","修改成功，请重新登录");
         } catch (Exception e) {
             e.printStackTrace();
             return WebUtil.generateFailModelMap("服务器忙，等下再试好不好");

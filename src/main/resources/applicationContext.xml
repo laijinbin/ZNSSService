@@ -5,9 +5,9 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <context:property-placeholder location="classpath*:config/*.properties"/>
 
-
-    <context:property-placeholder location="classpath:config/jdbc.properties"></context:property-placeholder>
+    <context:component-scan base-package="com.ittest.service"/>
 
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="driverClassName" value="${jdbc.driver}"></property>
@@ -15,9 +15,7 @@
         <property name="username" value="${jdbc.username}"></property>
         <property name="password" value="${jdbc.password}"></property>
     </bean>
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
+
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.ittest.dao"></property>
     </bean>
@@ -25,6 +23,18 @@
         <property name="dataSource" ref="dataSource"></property>
         <property name="configLocation" value="classpath:mybatis.xml"></property>
         <property name="mapperLocations" value="classpath:com/ittest/dao/*.xml"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <props>
+                            <prop key="helperDialect">mysql</prop>
+                            <prop key="reasonable">true</prop>
+                        </props>
+                    </property>
+                </bean>
+            </array>
+        </property>
     </bean>
 
     <bean id="txManage" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -36,7 +46,5 @@
             <tx:method name="*" read-only="false" propagation="REQUIRED"/>
         </tx:attributes>
     </tx:advice>
-    <aop:config>
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com..*Impl.*(..))"></aop:advisor>
-    </aop:config>
+   
 </beans>

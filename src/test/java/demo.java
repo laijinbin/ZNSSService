@@ -1,3 +1,5 @@
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,10 +9,9 @@ import java.util.Map;
 
 public class demo {
     public static void main(String[] args) {
-        System.out.println("======================");
-        System.out.println("硬件设备连接成功");
-        System.out.println("设备号为："+"1-101-B");
-        System.out.println("======================");
+//        BCryptPasswordEncoder bCryptPasswordEncoderb=new BCryptPasswordEncoder();
+//
+//        System.out.println(bCryptPasswordEncoderb.encode("123456"));
 //        try {
 //            Socket socket=new Socket("192.168.31.40",30000);
 //            InputStream is = socket.getInputStream();
@@ -25,8 +26,10 @@ public class demo {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-
+//
+//    }
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        System.out.println(bCryptPasswordEncoder.matches("123456789", "$2a$10$3/kHdub3FiNBsoQ.p4iG4OxgIJSUAC8NVQ7gwXrC4HLuQqr3m3.Qi"));
     }
-
 
 }

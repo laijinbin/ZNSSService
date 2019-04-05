@@ -1,11 +1,13 @@
 package com.ittest.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.ittest.dao.SysUserDao;
 import com.ittest.entiry.SysUser;
 import com.ittest.service.MiniprogramService;
 import com.ittest.utils.HttpClientUtils;
 import com.ittest.utils.WebUtil;
 import com.sun.org.apache.xpath.internal.operations.Mod;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.LineInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +27,9 @@ public class MiniprogramController {
 
     @Autowired
     private MiniprogramService miniprogramService;
+
+    @Autowired
+    private SysUserDao sysUserDao;
 
 
     @RequestMapping("/login")
@@ -61,5 +66,11 @@ public class MiniprogramController {
             e.printStackTrace();
         }
         return resultMap;
+    }
+
+    @RequestMapping("/getdemo")
+    @ResponseBody
+    public Map<String, Object> getdemo(String openId){
+        return miniprogramService.demo(openId);
     }
 }

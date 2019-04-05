@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 public class WIFIServiceSocket extends Thread {
     // 定义保存所有Socket的ArrayList

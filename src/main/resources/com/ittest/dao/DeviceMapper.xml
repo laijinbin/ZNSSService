@@ -3,9 +3,30 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ittest.dao.DeviceDao">
+    <insert id="save">
+        INSERT INTO device(device_name,floor_num,dormitory_num)
+        VALUES(#{deviceName},#{floorNum},#{dormitoryNum})
+    </insert>
+    <update id="update">
+        UPDATE device set floor_num=#{floorNum},dormitory_num=#{dormitoryNum}
+        where device_id=#{deviceId}
+    </update>
+    <delete id="delete">
+        DELETE from device where 1=1
+        <foreach collection="list" open="and device_id IN (" separator="," close=")"
+                 item="id">
+            #{id}
+        </foreach>
+    </delete>
 
 
     <select id="findByDeviceName" resultType="com.ittest.entiry.Device">
         SELECT * FROM device where device_name=#{deviceName}
+    </select>
+    <select id="findAll" resultType="com.ittest.entiry.Device">
+        SELECT * from device
+    </select>
+    <select id="findById" resultType="com.ittest.entiry.Device">
+        select * from device where device_id=#{deviceId};
     </select>
 </mapper>

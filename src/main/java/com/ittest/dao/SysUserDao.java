@@ -8,4 +8,10 @@ public interface SysUserDao {
     int saveUser(SysUser sysUser);
 
     void deleteUser(String openId);
+
+    SysUser findUserByUserName(String username);
+
+    void modifyPassword(SysUser sysUser);
+
+    void updateUser(SysUser sysUser);
 }

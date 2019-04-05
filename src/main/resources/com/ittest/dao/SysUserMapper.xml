@@ -3,15 +3,42 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ittest.dao.SysUserDao" >
+    <resultMap id="userMap" type="com.ittest.entiry.SysUser">
+        <id property="userId" column="user_id"></id>
+        <result property="realName" column="real_name"></result>
+        <result property="userName" column="user_name"></result>
+        <result property="password" column="password"></result>
+        <result property="openId" column="open_id"></result>
+        <result property="deviceId" column="device_id"></result>
+        <result property="phone" column="phone"></result>
+        <result property="isBind" column="is_bind"></result>
+        <collection property="roleList" ofType="com.ittest.entiry.Role">
+            <id property="id" column="id"></id>
+            <result property="roleName" column="role_name"></result>
+            <result property="roleDesc" column="role_desc"></result>
+        </collection>
+    </resultMap>
     <insert id="saveUser" keyProperty="userId" useGeneratedKeys="true">
         INSERT INTO sys_user(user_name,password,open_id,device_id,phone,is_bind,real_name)
          VALUES(#{userName},#{password},#{openId},#{deviceId},#{phone},#{isBind},#{realName})
     </insert>
+    <update id="modifyPassword">
+        UPDATE sys_user SET password=#{password} where user_name=#{userName}
+    </update>
+    <update id="updateUser">
+        UPDATE sys_user SET user_name=#{userName},real_name=#{realName},phone=#{phone}
+        where user_id=#{userId}
+    </update>
     <delete id="deleteUser">
         DELETE FROM sys_user where open_id=#{openId}
     </delete>
 
     <select id="findUserByOpenId" resultType="com.ittest.entiry.SysUser">
         SELECT * from sys_user where open_id=#{openId}
+    </select>
+    <select id="findUserByUserName" resultMap="userMap">
+        SELECT  u.*,r.id,r.role_name,role_desc FROM  sys_user u
+        LEFT JOIN sys_user_role ur on u.user_id=ur.user_id
+        LEFT join sys_role r on ur.role_id=r.id where user_name=#{username}
     </select>
 </mapper>

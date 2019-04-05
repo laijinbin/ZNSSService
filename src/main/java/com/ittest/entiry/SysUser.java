@@ -1,5 +1,7 @@
 package com.ittest.entiry;
 
+import java.util.List;
+
 public class SysUser {
     private int userId;
     private String userName;
@@ -9,6 +11,7 @@ public class SysUser {
     private String phone;
     private String isBind;
     private String realName;
+    private List<Role> roleList;
 
     @Override
     public String toString() {
@@ -20,8 +23,17 @@ public class SysUser {
                 ", deviceId=" + deviceId +
                 ", phone='" + phone + '\'' +
                 ", isBind='" + isBind + '\'' +
-                ", realname='" + realName + '\'' +
+                ", realName='" + realName + '\'' +
+                ", roleList=" + roleList +
                 '}';
+    }
+
+    public List<Role> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<Role> roleList) {
+        this.roleList = roleList;
     }
 
     public int getUserId() {
