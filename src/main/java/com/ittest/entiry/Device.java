@@ -5,15 +5,43 @@ public class Device {
     private String deviceName;
     private String floorNum;
     private String dormitoryNum;
-    private String userRealName;
+    private int bindUserId;
+    private String commonDeviceName;
+    private String isBind;
+    private SysUser sysUser;
 
-    public String getUserRealName() {
-        return userRealName;
+    public SysUser getSysUser() {
+        return sysUser;
     }
 
-    public void setUserRealName(String userRealName) {
-        this.userRealName = userRealName;
+    public void setSysUser(SysUser sysUser) {
+        this.sysUser = sysUser;
     }
+
+    public int getBindUserId() {
+        return bindUserId;
+    }
+
+    public void setBindUserId(int bindUserId) {
+        this.bindUserId = bindUserId;
+    }
+
+    public String getIsBind() {
+        return isBind;
+    }
+
+    public void setIsBind(String isBind) {
+        this.isBind = isBind;
+    }
+
+    public String getCommonDeviceName() {
+        return commonDeviceName;
+    }
+
+    public void setCommonDeviceName(String commonDeviceName) {
+        this.commonDeviceName = commonDeviceName;
+    }
+
 
     public String getFloorNum() {
         return floorNum;

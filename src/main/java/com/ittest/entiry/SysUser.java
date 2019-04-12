@@ -9,24 +9,10 @@ public class SysUser {
     private String openId;
     private int deviceId;
     private String phone;
-    private String isBind;
+
     private String realName;
     private List<Role> roleList;
 
-    @Override
-    public String toString() {
-        return "SysUser{" +
-                "userId=" + userId +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", openId='" + openId + '\'' +
-                ", deviceId=" + deviceId +
-                ", phone='" + phone + '\'' +
-                ", isBind='" + isBind + '\'' +
-                ", realName='" + realName + '\'' +
-                ", roleList=" + roleList +
-                '}';
-    }
 
     public List<Role> getRoleList() {
         return roleList;
@@ -86,13 +72,6 @@ public class SysUser {
         this.phone = phone;
     }
 
-    public String getIsBind() {
-        return isBind;
-    }
-
-    public void setIsBind(String isBind) {
-        this.isBind = isBind;
-    }
 
     public String getRealName() {
         return realName;

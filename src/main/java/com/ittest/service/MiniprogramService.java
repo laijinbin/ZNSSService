@@ -1,20 +1,21 @@
 package com.ittest.service;
 
 import com.alibaba.fastjson.JSON;
-import com.ittest.dao.DeviceDao;
-import com.ittest.dao.SysUserDao;
-import com.ittest.entiry.Device;
-import com.ittest.entiry.SysUser;
+import com.ittest.dao.*;
+import com.ittest.entiry.*;
 import com.ittest.utils.HttpClientUtils;
 import com.ittest.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +35,16 @@ public class MiniprogramService {
     private SysUserDao sysUserDao;
     @Autowired
     private DeviceDao deviceDao;
+    @Autowired
+    private RoleDao roleDao;
+    @Autowired
+    private UserRoleDao userRoleDao;
+
+    @Autowired
+    private TaskLogDao taskLogDao;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -63,6 +74,8 @@ public class MiniprogramService {
             SysUser sysUser=sysUserDao.findUserByOpenId(openId);
             if (sysUser!=null){
                 map.put("sysUser",sysUser);
+                Device device=deviceDao.findById(Integer.toString(sysUser.getDeviceId()));
+                map.put("device",device);
             }else {
                 map.put("sysUser","");
             }
@@ -83,18 +96,36 @@ public class MiniprogramService {
             String realName=(String) requestMap.get("realName");
             String username=(String) requestMap.get("userName");
             Device device=deviceDao.findByDeviceName(deviceName);
+            SysUser sysUser1=sysUserDao.findUser(username);
             if (device==null){
                 return WebUtil.generateFailModelMap("设备不存在,请仔细检查无误后重新输入");
+            }
+            if (device!=null && "1".equals(device.getIsBind())){
+                return WebUtil.generateFailModelMap("该设备已被绑定，请核实无误后重新输入");
+            }
+            if (sysUser1!=null){
+                return WebUtil.generateFailModelMap("用户名存在，请重新输入");
             }
             SysUser sysUser=new SysUser();
             sysUser.setOpenId(openId);
             sysUser.setDeviceId(device.getDeviceId());
-            sysUser.setIsBind("1");
             sysUser.setPassword(bCryptPasswordEncoder.encode(password));
             sysUser.setUserName(username);
             sysUser.setRealName(realName);
             sysUser.setPhone(phone);
+            //保存用户
             sysUserDao.saveUser(sysUser);
+            //更新设备表的信息
+            device.setBindUserId(sysUser.getUserId());
+            device.setIsBind("1");
+            deviceDao.updateBindInfo(device);
+            //为用户分配角色
+            Role role=roleDao.findRoleByRoleName("ROLE_USER");
+            UserRole userRole=new UserRole();
+            userRole.setRoleId(role.getRoleId());
+            userRole.setUserId(sysUser.getUserId());
+            userRoleDao.save(userRole);
+
             resultMap=WebUtil.generateModelMap("0","绑定成功");
             resultMap.put("sysUser",sysUser);
             return resultMap;
@@ -104,9 +135,17 @@ public class MiniprogramService {
         }
     }
 
-    public Map<String, Object> cancalBind(String openId) {
+    public Map<String, Object> cancalBind(String openId,String deviceId) {
         try {
+            //解绑用户表的
             sysUserDao.deleteUser(openId);
+            //解绑设备的
+            Device device=new Device();
+            device.setIsBind("0");
+            device.setBindUserId(0);
+            device.setDeviceId(Integer.parseInt(deviceId));
+            deviceDao.updateBindInfo(device);
+
             return WebUtil.generateModelMap("0","解绑成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -138,18 +177,48 @@ public class MiniprogramService {
 
     }
 
-    public Map<String, Object> updateUser(String userName,String phone,String realName,int userId) {
-        SysUser sysUser=new SysUser();
-        sysUser.setRealName(realName);
-        sysUser.setUserName(userName);
-        sysUser.setUserId(userId);
-        sysUser.setPhone(phone);
+    public Map<String, Object> updateUser(String userName, String phone, String realName, int userId, HttpServletRequest request) {
+        SysUser sysUser=sysUserDao.findUser(userName);
+        if (sysUser!=null){
+            return WebUtil.generateFailModelMap("用户名已存在，请重新输入");
+        }
+        SysUser sysUser2=new SysUser();
+
+        sysUser2.setRealName(realName);
+        sysUser2.setUserName(userName);
+        sysUser2.setUserId(userId);
+        sysUser2.setPhone(phone);
         try {
-            sysUserDao.updateUser(sysUser);
-            return WebUtil.generateModelMap("0","修改成功，请重新登录");
+            sysUserDao.updateUser(sysUser2);
+            SysUser sysUser1=sysUserDao.findUser(userName);
+            request.getSession().setAttribute("sysUser",sysUser1);
+            return WebUtil.generateModelMap("0","修改成功");
         } catch (Exception e) {
             e.printStackTrace();
             return WebUtil.generateFailModelMap("服务器忙，等下再试好不好");
+        }
+    }
+
+    public Map<String, Object> dingShi(Map<String,Object> reqMap) {
+        try {
+            String openId=(String) reqMap.get("openId");
+            int userId=(int) reqMap.get("userId");
+            TaskLog taskLog=new TaskLog();
+            taskLog.setCreateTime(new Date());
+            taskLog.setDeviceName((String) reqMap.get("deviceName"));
+            taskLog.setStatus("0");
+            taskLog.setUserId(userId);
+            taskLog.setRealName((String) reqMap.get("realName"));
+            taskLog.setOpenId(openId);
+            taskLog.setInstructions((String) reqMap.get("instructions"));
+            taskLog.setIntervalTime((Integer) reqMap.get("intervalTime"));
+            taskLogDao.save(taskLog);
+            //存进redis
+            redisTemplate.boundHashOps("TaskLogList").put(taskLog.getTaskId(),taskLog);
+            return WebUtil.generateModelMap("0","成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return WebUtil.generateFailModelMap("服务器忙，等一下再试好不好");
         }
     }
 }

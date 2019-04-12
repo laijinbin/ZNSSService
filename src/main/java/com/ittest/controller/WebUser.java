@@ -57,10 +57,12 @@ public class WebUser {
                     if (authenticate.isAuthenticated()) {
                         SecurityContextHolder.getContext().setAuthentication(authenticate);
                         SysUser sysUser = sysUserDao.findUserByUserName(username);
-                        Device device = deviceDao.findById(Integer.toString(sysUser.getDeviceId()));
                         request.getSession().setAttribute("sysUser", sysUser);
-                        request.getSession().setAttribute("device", device);
-                        request.getSession().setAttribute("loginTime", new SimpleDateFormat("yyyy-MM-DD HH:mm:ss").format(new Date()));
+                        if (!"admin".equals(username)){
+                            Device device = deviceDao.findById(Integer.toString(sysUser.getDeviceId()));
+                            request.getSession().setAttribute("device", device);
+                        }
+                        request.getSession().setAttribute("loginTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                         return "redirect:/index.jsp";
                     }
                 } else {
@@ -76,20 +78,19 @@ public class WebUser {
 
     @RequestMapping("/changPassword")
     @ResponseBody
-    public Map<String, Object> changPassword(String oldPassword, String newPassword) {
+    public Map<String, Object> changPassword(String oldPassword, String newPassword,HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<>();
-        User user = (User) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        String userName = user.getUsername();
+        SysUser sysUser=(SysUser)request.getSession().getAttribute("sysUser");
+        String userName = sysUser.getUserName();
         resultMap = miniprogramService.changPassword(oldPassword, newPassword, userName);
         return resultMap;
     }
 
     @RequestMapping("/updateUser")
     @ResponseBody
-    public Map<String, Object> updateUser(String userName,String phone,String realName,int userId ) {
+    public Map<String, Object> updateUser(String userName,String phone,String realName,int userId,HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap = miniprogramService.updateUser(userName,phone,realName,userId);
+        resultMap = miniprogramService.updateUser(userName,phone,realName,userId,request);
         return resultMap;
     }
 

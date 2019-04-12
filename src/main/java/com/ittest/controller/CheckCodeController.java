@@ -48,9 +48,9 @@ public class CheckCodeController {
         //设置画笔颜色为黄色
         g.setColor(Color.black);
         //设置字体的小大
-        g.setFont(new Font("黑体", Font.BOLD, 27));
+        g.setFont(new Font("黑体", Font.BOLD, 25));
         //向图片上写入验证码
-        g.drawString(checkCode, 15, 30);
+        g.drawString(checkCode, 10, 30);
         //画干扰线
         float lineWidth = 1.7f;
         ((Graphics2D)g).setStroke(new BasicStroke(lineWidth));

@@ -3,12 +3,28 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ittest.dao.DeviceDao">
+    <resultMap id="baseMap" type="com.ittest.entiry.Device">
+        <id property="deviceId" column="device_id"></id>
+        <result property="deviceName" column="device_name"></result>
+        <result property="floorNum" column="floor_num"></result>
+        <result property="dormitoryNum" column="dormitory_num"></result>
+        <result property="commonDeviceName" column="common_device_name"></result>
+        <result property="isBind" column="is_bind"></result>
+        <association property="sysUser" javaType="com.ittest.entiry.SysUser" column="bind_user_Id">
+            <id property="userId" column="user_id"></id>
+            <result property="realName" column="real_name"></result>
+        </association>
+    </resultMap>
     <insert id="save">
-        INSERT INTO device(device_name,floor_num,dormitory_num)
-        VALUES(#{deviceName},#{floorNum},#{dormitoryNum})
+        INSERT INTO device(device_name,floor_num,dormitory_num,common_device_name,is_bind)
+        VALUES(#{deviceName},#{floorNum},#{dormitoryNum},#{commonDeviceName},#{isBind})
     </insert>
     <update id="update">
-        UPDATE device set floor_num=#{floorNum},dormitory_num=#{dormitoryNum}
+        UPDATE device set floor_num=#{floorNum},dormitory_num=#{dormitoryNum},common_device_name=#{commonDeviceName}
+        where device_id=#{deviceId}
+    </update>
+    <update id="updateBindInfo">
+        UPDATE device SET is_bind=#{isBind},bind_user_id=#{bindUserId}
         where device_id=#{deviceId}
     </update>
     <delete id="delete">
@@ -23,8 +39,8 @@
     <select id="findByDeviceName" resultType="com.ittest.entiry.Device">
         SELECT * FROM device where device_name=#{deviceName}
     </select>
-    <select id="findAll" resultType="com.ittest.entiry.Device">
-        SELECT * from device
+    <select id="findAll" resultMap="baseMap">
+        SELECT d.*,u.user_id,u.real_name from device d LEFT JOIN sys_user u on d.bind_user_Id=u.user_id
     </select>
     <select id="findById" resultType="com.ittest.entiry.Device">
         select * from device where device_id=#{deviceId};

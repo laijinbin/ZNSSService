@@ -1,6 +1,7 @@
 package com.ittest.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.ittest.socket.WIFIServiceSocket;
 import org.springframework.stereotype.Component;
 
@@ -50,8 +51,11 @@ public class WebSocketTest {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("来自小程序用户【张三】的指令:" + message);
-        System.out.println("转发指令：指令【T-15】转发至设备号【1-101-A】");
+        Map<String,Object> messageMap= (Map<String, Object>) JSON.parse(message);
+        String msg= (String) messageMap.get("msg");
+        String equipment= (String) messageMap.get("equipment");
+        System.out.println(msg);
+        System.out.println(equipment);
         byte[] bytes=null;
         try {
              bytes=(message+"\r\n").getBytes("utf-8");

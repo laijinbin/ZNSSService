@@ -28,8 +28,8 @@ public class demo {
 //        }
 //
 //    }
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        System.out.println(bCryptPasswordEncoder.matches("123456789", "$2a$10$3/kHdub3FiNBsoQ.p4iG4OxgIJSUAC8NVQ7gwXrC4HLuQqr3m3.Qi"));
+//        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+//        System.out.println(bCryptPasswordEncoder.matches("123456789", "$2a$10$3/kHdub3FiNBsoQ.p4iG4OxgIJSUAC8NVQ7gwXrC4HLuQqr3m3.Qi"));
     }
 
 }

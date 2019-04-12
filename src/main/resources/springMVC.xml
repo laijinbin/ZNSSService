@@ -3,31 +3,41 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
-
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
-    <context:component-scan base-package="com.ittest.controller"/>
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+         http://www.springframework.org/schema/aop
+         http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task.xsd">
+    <context:component-scan base-package="com.ittest.controller,com.ittest.task"/>
+    <!-- 开启任务注解驱动 -->
+    <task:annotation-driven/>
+    <!-- 配置任务调度方式 -->
+    <task:scheduler id="scheduler"/>
 
     <mvc:annotation-driven>
-    <mvc:message-converters register-defaults="true">
-        <!-- 配置Fastjson支持 -->
-        <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
-            <property name="supportedMediaTypes">
-                <list>
-                    <value>text/html;charset=UTF-8</value>
-                    <value>application/json</value>
-                </list>
-            </property>
-            <property name="features">
-                <list>
-                    <value>WriteMapNullValue</value>
-                    <value>QuoteFieldNames</value>
-                </list>
-            </property>
-        </bean>
-    </mvc:message-converters>
+        <mvc:message-converters register-defaults="true">
+            <!-- 配置Fastjson支持 -->
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json</value>
+                    </list>
+                </property>
+                <property name="features">
+                    <list>
+                        <value>WriteMapNullValue</value>
+                        <value>QuoteFieldNames</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
     </mvc:annotation-driven>
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -38,6 +48,6 @@
     <mvc:resources mapping="/css/**" location="/css/"></mvc:resources>
     <mvc:resources mapping="/img/**" location="/img/"></mvc:resources>
     <mvc:resources mapping="/plugins/**" location="/plugins/"></mvc:resources>
-   <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
 
 </beans>

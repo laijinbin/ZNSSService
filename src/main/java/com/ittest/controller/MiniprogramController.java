@@ -57,10 +57,10 @@ public class MiniprogramController {
 
     @RequestMapping("/cancalBind")
     @ResponseBody
-    public Map<String, Object> cancalBind(String openId){
+    public Map<String, Object> cancalBind(String openId,String deviceId){
         Map<String,Object> resultMap= null;
         try {
-            resultMap = miniprogramService.cancalBind(openId);
+            resultMap = miniprogramService.cancalBind(openId,deviceId);
         } catch (Exception e) {
             resultMap=WebUtil.generateFailModelMap("服务器忙，等一下再来好不好");
             e.printStackTrace();
@@ -72,5 +72,10 @@ public class MiniprogramController {
     @ResponseBody
     public Map<String, Object> getdemo(String openId){
         return miniprogramService.demo(openId);
+    }
+    @RequestMapping("/dingShi")
+    @ResponseBody
+    public Map<String, Object> dingShi(@RequestBody Map<String,Object> reqMap){
+        return miniprogramService.dingShi(reqMap);
     }
 }

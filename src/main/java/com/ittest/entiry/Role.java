@@ -3,17 +3,17 @@ package com.ittest.entiry;
 import java.util.List;
 
 public class Role {
-    private int id;
+    private int roleId;
     private String roleName;
     private String roleDesc;
-    private List<Permission> permissionList;
 
-    public int getId() {
-        return id;
+
+    public int getRoleId() {
+        return roleId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
     }
 
     public String getRoleName() {
@@ -32,11 +32,4 @@ public class Role {
         this.roleDesc = roleDesc;
     }
 
-    public List<Permission> getPermissionList() {
-        return permissionList;
-    }
-
-    public void setPermissionList(List<Permission> permissionList) {
-        this.permissionList = permissionList;
-    }
 }

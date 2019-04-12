@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.swing.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Secured("ROLE_ADMIN")
 @Controller
@@ -61,5 +63,12 @@ public class DeviceController {
         String[] deviceIds=ids.split(",");
         deviceService.delete(deviceIds);
         return "redirect:/device/findAll";
+    }
+    @RequestMapping("/checkDeviceName")
+    @ResponseBody
+    public Map checkDeviceName(String deviceName){
+        Map<String,Object> map=new HashMap<>();
+        map=deviceService.checkDeviceName(deviceName);
+        return map;
     }
 }

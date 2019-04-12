@@ -14,4 +14,6 @@ public interface SysUserDao {
     void modifyPassword(SysUser sysUser);
 
     void updateUser(SysUser sysUser);
+
+    SysUser findUser(String username);
 }

@@ -16,4 +16,6 @@ public interface DeviceDao {
     void update(Device device);
 
     void delete(List<String> list);
+
+    void updateBindInfo(Device device);
 }
