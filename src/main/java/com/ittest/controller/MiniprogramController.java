@@ -2,15 +2,16 @@ package com.ittest.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.ittest.dao.SysUserDao;
+import com.ittest.entiry.CheckWenShiDu;
 import com.ittest.entiry.SysUser;
 import com.ittest.service.MiniprogramService;
 import com.ittest.utils.HttpClientUtils;
 import com.ittest.utils.WebUtil;
 import com.sun.org.apache.xpath.internal.operations.Mod;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.LineInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,9 @@ public class MiniprogramController {
 
     @Autowired
     private MiniprogramService miniprogramService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private SysUserDao sysUserDao;
@@ -78,4 +82,11 @@ public class MiniprogramController {
     public Map<String, Object> dingShi(@RequestBody Map<String,Object> reqMap){
         return miniprogramService.dingShi(reqMap);
     }
+
+    @RequestMapping("/saveWenShiDuMax")
+    @ResponseBody
+    public Map saveWenShiDuMax(@RequestBody CheckWenShiDu checkWenShiDu){
+        return miniprogramService.saveWenShiDuMax(checkWenShiDu);
+    }
+
 }

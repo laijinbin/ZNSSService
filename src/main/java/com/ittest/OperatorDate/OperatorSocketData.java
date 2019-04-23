@@ -2,15 +2,23 @@ package com.ittest.OperatorDate;
 
 import com.alibaba.druid.sql.visitor.functions.Char;
 import com.ittest.controller.WebSocketTest;
+import com.ittest.dao.DeviceDao;
 import com.ittest.socket.WIFIServiceSocket;
+import com.ittest.utils.SpringBeanUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class OperatorSocketData implements Runnable {
+
+    private DeviceDao deviceDao;
+    private RedisTemplate redisTemplate;
     // 定义当前线程所处理的Socket
     private Socket s = null;
     // 该线程所处理的Socket所对应的输入流
@@ -20,6 +28,8 @@ public class OperatorSocketData implements Runnable {
     public OperatorSocketData(Socket s) throws IOException {
         this.s = s;
 // 初始化该Socket对应的输入流
+        this.deviceDao= SpringBeanUtil.getBean(DeviceDao.class);
+        this.redisTemplate= SpringBeanUtil.getBean(RedisTemplate.class);
 in=s.getInputStream();
        // br = new BufferedReader(new InputStreamReader(s.getInputStream(), "utf-8"));
     }
@@ -40,11 +50,31 @@ in=s.getInputStream();
 
         try {
             String content = null;
+
             // 采用循环不断从Socket中读取客户端发送过来的数据
             while (true) {
                 content = readFromClient();
-                System.out.println("客户端--->服务器：  " + content);
-                WebSocketTest.socketTestMap.get("CONN_9527").sendMessage(content);
+                String[] strings=content.split("_");
+                if (!"END".equals(strings[1])){
+                    System.out.println("客户端--->服务器：  " + strings[1]);
+                    redisTemplate.boundHashOps("WenShiDuList").put(strings[0],strings[1]);
+                    List<String> deviceNameList=deviceDao.getDeviceNameList(strings[0]);
+                    for (String s1 : WebSocketTest.socketTestMap.keySet()) {
+                        for (String s2 : deviceNameList) {
+                            if (s2.equals(s1) && WebSocketTest.socketTestMap.get(s1)!=null){
+                                WebSocketTest.socketTestMap.get(s2).sendMessage(strings[1]);
+                            }
+                        }
+                    }
+                }else {
+                    if (WIFIServiceSocket.socketMap.get(strings[0])==null || !s.equals(WIFIServiceSocket.socketMap.get(strings[0]))){
+                        WIFIServiceSocket.socketMap.put(strings[0],s);
+                        System.out.println("添加了");
+                    }
+                }
+
+
+//                WebSocketTest.socketTestMap.get("CONN_9527").sendMessage(content);
                 //  TODO:实现客户端与服务器的一对一交流，暂未实现客户端之间的交流
                 // 遍历socketList中的每个Socket，
                 // 将读到的内容向每个Socket发送一次
@@ -83,7 +113,7 @@ in=s.getInputStream();
         catch (IOException e) {
             e.printStackTrace();
 // 删除该Socket。
-            WIFIServiceSocket.socketList.remove(s);
+//            WIFIServiceSocket.socketList.remove(s);
         }
         return null;
     }

@@ -15,6 +15,10 @@
             <result property="realName" column="real_name"></result>
         </association>
     </resultMap>
+    <resultMap id="smsMap" type="com.ittest.entiry.SysUser">
+        <result property="realName" column="real_name"></result>
+        <result property="phone" column="phone"></result>
+    </resultMap>
     <insert id="save">
         INSERT INTO device(device_name,floor_num,dormitory_num,common_device_name,is_bind)
         VALUES(#{deviceName},#{floorNum},#{dormitoryNum},#{commonDeviceName},#{isBind})
@@ -45,4 +49,11 @@
     <select id="findById" resultType="com.ittest.entiry.Device">
         select * from device where device_id=#{deviceId};
     </select>
+    <select id="getDeviceNameList" resultType="java.lang.String">
+        SELECT device_name from device where common_device_name=#{commonDeviceName}
+    </select>
+    <select id="findAllUserByCommmonDeviceName" resultType="java.util.Map">
+                SELECT real_name as realName,phone FROM sys_user WHERE device_id IN (SELECT device_id FROM  device WHERE common_device_name=#{commmonDeviceName})
+    </select>
+
 </mapper>

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class WIFIServiceSocket extends Thread {
@@ -17,6 +19,7 @@ public class WIFIServiceSocket extends Thread {
     public static ArrayList<SocketInfo> socketInfo = new ArrayList<SocketInfo>();
     private ServerSocket serverSocket = null;
     private ServletContext servletContext = null;
+    public static Map<String,Socket> socketMap=new HashMap<>();
 
     public WIFIServiceSocket(ServerSocket serverSocket, ServletContext servletContext) {
         if (serverSocket == null) {
@@ -50,7 +53,7 @@ public class WIFIServiceSocket extends Thread {
                 System.out.println("###getInetAddress # " + socket.getInetAddress());
                 //  客户端端口
                 System.out.println("###getPort # " + socket.getPort());
-                socketList.add(socket);
+                //socketList.add(socket);
                 System.out.println("###连接成功");
 
                 if (socket != null) {
@@ -67,6 +70,12 @@ public class WIFIServiceSocket extends Thread {
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
+                for (String s : socketMap.keySet()) {
+                    if (socketMap.get(s).isClosed()){
+                        socketMap.remove(s);
+                    }
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();

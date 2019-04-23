@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Component
 public class WebSocketTest {
     private Session session;
+
     private static int onlineCount =0;
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
     private static CopyOnWriteArraySet<WebSocketTest> webSocketSet = new CopyOnWriteArraySet<WebSocketTest>();
@@ -29,18 +30,29 @@ public class WebSocketTest {
     @OnOpen
     public void onOpen(Session session){
         this.session = session;
-        webSocketSet.add(this);     //加入set中
+//        webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
-        socketTestMap.put("CONN_9527",this);
+//        socketTestMap.put("CONN_9527",this);
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
     }
 
     /**
      * 连接关闭调用的方法
      */
+
+//    @RequestMapping("/closeSocket")
+//    @ResponseBody
+//    public Map closeSocket(String deviceName){
+//        Map<String,Object> map=new HashMap<>();
+//        subOnlineCount();           //在线数减1
+//        System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
+//        socketTestMap.remove(deviceName);
+//        map= WebUtil.generateModelMap("0","socket已关闭");
+//        return map;
+//    }
     @OnClose
     public void onClose(){
-        webSocketSet.remove(this);  //从set中删除
+//        webSocketSet.remove(this);  //从set中删除
         subOnlineCount();           //在线数减1
         System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
     }
@@ -53,35 +65,47 @@ public class WebSocketTest {
     public void onMessage(String message, Session session) {
         Map<String,Object> messageMap= (Map<String, Object>) JSON.parse(message);
         String msg= (String) messageMap.get("msg");
+        String flag= (String) messageMap.get("flag");
         String equipment= (String) messageMap.get("equipment");
+        String binddevice= (String) messageMap.get("binddevice");
+        if ("2".equals(flag)){
+            socketTestMap.remove(binddevice);
+            return;
+        }
+
+         if (socketTestMap.get(binddevice)==null || !this.equals(socketTestMap.get(binddevice))){
+            socketTestMap.put(binddevice,this);
+            return;
+        }
         System.out.println(msg);
         System.out.println(equipment);
         byte[] bytes=null;
         try {
-             bytes=(message+"\r\n").getBytes("utf-8");
+             bytes=(msg+"\r\n").getBytes("utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
-        for (Socket socket : WIFIServiceSocket.socketList) {
+        //发给单一的客户端,map发送
+        for (String s : WIFIServiceSocket.socketMap.keySet()) {
+            if (equipment.equals(s)){
+                try {
+                 Socket socket=WIFIServiceSocket.socketMap.get(s);
+                OutputStream os = socket.getOutputStream();
+                os.write(bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            }
+        }
+        /*for (Socket socket : WIFIServiceSocket.socketList) {
             try {
                 OutputStream os = socket.getOutputStream();
                 os.write(bytes);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }*/
 
-        }
-
-//        //群发消息
-//        for(WebSocketTest item: webSocketSet){
-//            try {
-//                item.sendMessage(message);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                continue;
-//            }
-//        }
     }
 
     /**

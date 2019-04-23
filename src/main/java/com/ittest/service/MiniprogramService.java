@@ -5,6 +5,7 @@ import com.ittest.dao.*;
 import com.ittest.entiry.*;
 import com.ittest.utils.HttpClientUtils;
 import com.ittest.utils.WebUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -49,27 +50,28 @@ public class MiniprogramService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Value("${openId}")
-    private String openId;
+    /*@Value("${openId}")
+    private String openId;*/
 
     public Map<String, Object> login(String code) {
-        //HttpClientUtils httpClientUtils=new HttpClientUtils(true);
+        HttpClientUtils httpClientUtils=new HttpClientUtils(true);
         Map<String,String> paramMap=new HashMap<>();
         paramMap.put("appid",appid);
         paramMap.put("secret",secret);
         paramMap.put("js_code",code);
         paramMap.put("grant_type",grantType);
-        //String result = null;
+        String result = null;
         Map<String,Object> map=null;
-        Map<String,Object> resultMap=new HashMap<>();
+       // Map<String,Object> resultMap=new HashMap<>();
         try {
-            /*result = httpClientUtils.sendGet(wxLoginUrl, paramMap);
+            result = httpClientUtils.sendGet(wxLoginUrl, paramMap);
             Map<String,Object> resultMap= JSON.parseObject(result,Map.class);
             map= WebUtil.generateSuccessModelMap();
-            map.put("result",resultMap);
-            String openId=(String) resultMap.get("openid");*/
-            map= WebUtil.generateSuccessModelMap();
+           // map.put("result",resultMap);
+            String openId=(String) resultMap.get("openid");
             resultMap.put("openId",openId);
+            map= WebUtil.generateSuccessModelMap();
+           // resultMap.put("openId",openId);
             map.put("resultMap",resultMap);
             SysUser sysUser=sysUserDao.findUserByOpenId(openId);
             if (sysUser!=null){
@@ -220,5 +222,18 @@ public class MiniprogramService {
             e.printStackTrace();
             return WebUtil.generateFailModelMap("服务器忙，等一下再试好不好");
         }
+    }
+
+    public Map saveWenShiDuMax(CheckWenShiDu checkWenShiDu) {
+        Map<String,Object> map= null;
+        try {
+            map = new HashMap<>();
+            redisTemplate.boundHashOps("wenShiDuMaxList").put(checkWenShiDu.getCommonDeviceName(),checkWenShiDu);
+            map=WebUtil.generateModelMap("0","设置成功");
+        } catch (Exception e) {
+            map=WebUtil.generateModelMap("1","服务器忙，等下再试好不好");
+            e.printStackTrace();
+        }
+        return map;
     }
 }
