@@ -19,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -49,6 +51,9 @@ public class MiniprogramService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private SMSService smsService;
 
     /*@Value("${openId}")
     private String openId;*/
@@ -235,5 +240,51 @@ public class MiniprogramService {
             e.printStackTrace();
         }
         return map;
+    }
+
+    public Map sendSmsCode(String changPwdPhone) {
+        Map<String,Object> map=new HashMap<>();
+        try {
+            String code = UUID.randomUUID().toString().replaceAll("-", "")
+                    .replaceAll("[a-z|A-Z]", "").substring(0, 6);
+            smsService.sendSMSCode(code,changPwdPhone);
+            redisTemplate.boundValueOps(changPwdPhone).set(code,60, TimeUnit.SECONDS);
+            map=WebUtil.generateModelMap("0","发送成功");
+        } catch (Exception e) {
+            map=WebUtil.generateModelMap("1","发送失败，请重新试一下");
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    public Map alertPwd(Map<String, Object> reqMap) {
+        Map<String,Object> map= null;
+        try {
+            map = new HashMap<>();
+            String changPwdName= (String) reqMap.get("changPwdName");
+            String changPwdNewPwd= (String) reqMap.get("changPwdNewPwd");
+            String changPwdSmsCode= (String) reqMap.get("changPwdSmsCode");
+            String changPwdPhone= (String) reqMap.get("changPwdPhone");
+            String code= (String) redisTemplate.boundValueOps(changPwdPhone).get();
+            if (!StringUtils.isNotBlank(code)){
+                return WebUtil.generateModelMap("1","验证码已过期，请重新获取，谢谢");
+            }
+            if (!code.equals(changPwdSmsCode)){
+                return WebUtil.generateModelMap("1","验证码错误，请重新输入，谢谢");
+            }
+            SysUser sysUser=sysUserDao.findUser(changPwdName);
+            if (sysUser==null){
+                return WebUtil.generateModelMap("1","用户不存在，请重新输入");
+            }
+            if (!sysUser.getPhone().equals(changPwdPhone)){
+                return WebUtil.generateModelMap("1","当前手机号码与用户绑定的号码不一致，请重新输入");
+            }
+            sysUser.setPassword(bCryptPasswordEncoder.encode(changPwdNewPwd));
+            sysUserDao.modifyPassword(sysUser);
+            return WebUtil.generateModelMap("0","重置密码成功，请使用新密码登录");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return WebUtil.generateModelMap("1","服务器忙，请等一下再重试");
+        }
     }
 }

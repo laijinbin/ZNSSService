@@ -12,6 +12,8 @@
     <security:http pattern="/api/wxMiniprogram/**" security="none"/>
     <security:http pattern="/Miniprogram" security="none"/>
     <security:http pattern="/manager/checkCode" security="none"/>
+    <security:http pattern="/web/sendSmsCode" security="none"/>
+    <security:http pattern="/web/alertPwd" security="none"/>
 
 
     <!--2. 拦截资源配置、登陆退出表单的配置-->

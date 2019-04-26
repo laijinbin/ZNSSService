@@ -5,6 +5,7 @@ import com.ittest.dao.SysUserDao;
 import com.ittest.entiry.Device;
 import com.ittest.entiry.SysUser;
 import com.ittest.service.MiniprogramService;
+import com.ittest.utils.WebUtil;
 import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.commons.lang.StringUtils;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
@@ -92,6 +93,19 @@ public class WebUser {
         Map<String, Object> resultMap = new HashMap<>();
         resultMap = miniprogramService.updateUser(userName,phone,realName,userId,request);
         return resultMap;
+    }
+
+    @RequestMapping("/sendSmsCode")
+    @ResponseBody
+    public Map sendSmsCode(String changPwdPhone){
+      return  miniprogramService.sendSmsCode(changPwdPhone);
+    }
+
+    @RequestMapping("/alertPwd")
+    @ResponseBody
+    public Map alertPwd(@RequestBody Map<String,Object> reqMap){
+
+        return miniprogramService.alertPwd(reqMap);
     }
 
 }
