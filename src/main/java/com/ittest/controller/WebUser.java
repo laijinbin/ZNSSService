@@ -108,4 +108,12 @@ public class WebUser {
         return miniprogramService.alertPwd(reqMap);
     }
 
+    @RequestMapping("/checkUserName")
+    @ResponseBody
+    public Map checkUserName(String userName){
+
+        return miniprogramService.checkUserName(userName);
+    }
+
+
 }

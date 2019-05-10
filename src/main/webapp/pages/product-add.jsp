@@ -115,7 +115,7 @@
 								<%--<div class="input-group-addon">--%>
 									<%--<i class="fa fa-calendar"></i>--%>
 								<%--</div>--%>
-								<input type="text" class="form-control"
+								<input type="text" class="form-control" id="floorNum"
 									 name="floorNum" placeholder="设备所属楼号" value="">
 							<%--</div>--%>
 						</div>
@@ -123,7 +123,7 @@
 
 						<div class="col-md-2 title">设备所属宿舍号</div>
 						<div class="col-md-4 data">
-							<input type="text" class="form-control" name="dormitoryNum"
+							<input type="text" class="form-control" name="dormitoryNum" id="dormitoryNum"
 								placeholder="设备所属宿舍号" value="">
 						</div>
 
@@ -152,7 +152,7 @@
 				</div>
 				<!--订单信息/--> <!--工具栏-->
 				<div class="box-tools text-center">
-					<button type="submit" class="btn bg-maroon">保存</button>
+					<button type="button" onclick="saveDevice()" class="btn bg-maroon">保存</button>
 					<button type="button" class="btn bg-default"
 						onclick="history.back(-1);">返回</button>
 				</div>
@@ -299,11 +299,37 @@
 			});
 
 		});
+		function saveDevice() {
+            var deviceName=$("#deviceName").val();
+            var floorNum=$("#floorNum").val();
+            var dormitoryNum=$("#dormitoryNum").val();
+            if (deviceName.indexOf(floorNum+"-"+dormitoryNum)==-1){
+                alert("宿舍号、楼号和设备号不对应");
+                return;
+			}
+            document.forms[0].submit();
+
+        }
 		function checkDeviceName() {
+		    var deviceName=$("#deviceName").val();
+		    if (deviceName.length<=0){
+		        alert("设备名不能为空");
+		        return;
+			}
+			var namess=deviceName.split("-");
+		    if(namess.length!=3){
+		        alert("设备命名不规范");
+		        return;
+			}
+			if (!(/^[B-Z]$/).test(namess[2])){
+		        alert("命名格式错误,最后一位必须是一个大写的除A之外的字母");
+		        return;
+			}
+
 
 			$.ajax({
 				url:"/ZNSS/device/checkDeviceName",
-				data:{deviceName:$("#deviceName").val()},
+				data:{deviceName:deviceName},
                 type:"get",
                 dataType:"json",
 				success:function (res) {

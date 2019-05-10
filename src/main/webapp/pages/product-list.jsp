@@ -135,11 +135,11 @@
 							</div>
 						</div>
 						<div class="box-tools pull-right">
-							<div class="has-feedback">
-								<input type="text" class="form-control input-sm"
-									placeholder="搜索"> <span
-									class="glyphicon glyphicon-search form-control-feedback"></span>
-							</div>
+							<%--<div class="has-feedback">--%>
+								<%--<input type="text" class="form-control input-sm"--%>
+									<%--placeholder="搜索"> <span--%>
+									<%--class="glyphicon glyphicon-search form-control-feedback"></span>--%>
+							<%--</div>--%>
 						</div>
 						<!--工具栏/-->
 
@@ -174,7 +174,7 @@
 									<td>${d.isBind=="0"?"未绑定":"已绑定"}</td>
 									<td>${d.sysUser.realName}</td>
 									<td class="text-center">
-										<button type="button" class="btn bg-olive btn-xs"
+										<button type="button" class="btn bg-olive btn-xs" ${d.isBind=="0"?"":"disabled='disabled'"}
 											onclick='location.href="${pageContext.request.contextPath}/device/toUpdate?deviceId=${d.deviceId}"'>编辑</button>
 										<%--<button type="button" class="btn bg-olive btn-xs"--%>
 											<%--onclick='location.href="all-order-manage-edit.html"'>查看</button>--%>

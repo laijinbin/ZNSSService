@@ -254,6 +254,30 @@
 				liObj.addClass("active");
 			}
 		}
+        // function checkUserName() {
+			// var userName=$("#userName").val();
+			// if (userName.length<=0){
+			//     alert("用户名不能为空");
+			//     return;
+			// }
+        //     $.ajax({
+        //         url:"/ZNSS/web/checkUserName?userName="+userName,
+        //         data:{},
+        //         type:"get",
+        //         dataType:"json",
+        //         success:function (result) {
+        //             if (result.code=="0"){
+        //                 alert(result.msg);
+        //             }else {
+        //                 alert(result.msg);
+        //                 $("#userName").val("");
+        //             }
+        //         },
+        //         error:function () {
+        //             alert("服务器忙。。。");
+        //         }
+        //     })
+        // }
 
 		function updateUser() {
 		    var data={userName:$("#userName").val(),realName:$("#realName").val(),

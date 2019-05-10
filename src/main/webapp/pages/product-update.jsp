@@ -103,18 +103,18 @@
 					<div class="row data-type">
 						<div class="col-md-2 title">设备编号</div>
 						<div class="col-md-4 data">
-							<input type="text" class="form-control" name="deviceName"
+							<input type="text" class="form-control" name="deviceName" id="deviceName"
 								placeholder="产品编号" value="${device.deviceName}"
 								readonly="readonly">
 						</div>
 						<div class="col-md-2 title">设备所属楼号</div>
 						<div class="col-md-4 data">
-							<input type="text" class="form-control" name="floorNum"
+							<input type="text" class="form-control" name="floorNum" id="floorNum"
 								placeholder="设备所属楼号" value="${device.floorNum}">
 						</div>
 						<div class="col-md-2 title">设备所属宿舍号</div>
 						<div class="col-md-4 data">
-							<input type="text" class="form-control" name="dormitoryNum"
+							<input type="text" class="form-control" name="dormitoryNum" id="dormitoryNum"
 								   placeholder="设备所属宿舍号" value="${device.dormitoryNum}">
 						</div>
 						<%--<div class="col-md-2 title">出发时间</div>--%>
@@ -161,7 +161,7 @@
 				</div>
 				<!--订单信息/--> <!--工具栏-->
 				<div class="box-tools text-center">
-					<button type="submit" class="btn bg-maroon">修改</button>
+					<button type="submit"  class="btn bg-maroon">修改</button>
 					<button type="button" class="btn bg-default"
 						onclick="history.back(-1);">返回</button>
 				</div>
@@ -280,6 +280,11 @@
 				locale : 'zh-CN'
 			});
 		});
+		function updateDevice() {
+            // deviceName
+		    var
+
+        }
 
 		// 设置激活菜单
 		function setSidebarActive(tagUri) {

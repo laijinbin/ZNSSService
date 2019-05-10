@@ -74,7 +74,7 @@ public class TaskController {
         System.out.println("定时任务扫描结束");
 
     }
-    //@Scheduled(cron = "0 0/10 * * * ?")
+   // @Scheduled(cron = "0 0/4 * * * ?")
     public void fengShanAutoTask(){
         System.out.println("开始向设备发送温度数据");
       Set commmonDeviceNameList= redisTemplate.boundHashOps("WenShiDuList").keys();
@@ -105,7 +105,7 @@ public class TaskController {
 
     }
 
-    //@Scheduled(cron = "0 0/30 * * * ?")
+    //@Scheduled(cron = "0 0/2 * * * ?")
     public void checkWenShiDu(){
         System.out.println("开始检查温湿度");
         //拿到温湿度数据
