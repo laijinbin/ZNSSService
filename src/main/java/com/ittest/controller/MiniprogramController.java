@@ -77,6 +77,7 @@ public class MiniprogramController {
     public Map<String, Object> getdemo(String openId){
         return miniprogramService.demo(openId);
     }
+
     @RequestMapping("/dingShi")
     @ResponseBody
     public Map<String, Object> dingShi(@RequestBody Map<String,Object> reqMap){
